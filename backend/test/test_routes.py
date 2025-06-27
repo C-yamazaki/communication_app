@@ -11,7 +11,7 @@ router = APIRouter()
 #     return test_cruds.get_users(db, skip=skip, limit=limit)
 
 # ユーザー登録（POST）
-@router.post("/users", response_model=test_schemas.UserRead)
+@router.post("/users")  #, response_model=test_schemas.UserResponse)
 def create_user(user: test_schemas.UserCreate, db: Session = Depends(get_db)):
     return test_cruds.create_user(db, user)
 

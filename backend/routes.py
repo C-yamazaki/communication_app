@@ -9,12 +9,12 @@ import test.test_cruds as cruds, test.test_schemas as schemas, test.test_models 
 router = APIRouter()
 
 # ユーザー一覧取得（GET）
-@router.get("/users", response_model=list[schemas.UserRead])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return cruds.get_users(db, skip=skip, limit=limit)
+# @router.get("/users", response_model=list[schemas.UserRead])
+# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return cruds.get_users(db, skip=skip, limit=limit)
 
 # ユーザー登録（POST）
-@router.post("/users", response_model=schemas.UserRead)
+@router.post("/users") #, response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # email重複チェック（任意で）
     existing = db.query(models.User).filter(models.User.email == user.email).first()
