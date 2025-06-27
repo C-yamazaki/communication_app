@@ -1,6 +1,7 @@
-# Flutter × FastAPI × PostgreSQL サンプルプロジェクト
+# Flutter × FastAPI × PostgreSQL コミュニケーション活性化アプリ
 
-このプロジェクトは、Flutter（Web）をフロントエンドに、FastAPIをバックエンド、PostgreSQLをデータベースとして使用した全体統合のサンプル構成です。
+このプロジェクトは、Flutter（Web）をフロントエンドに、FastAPIをバックエンド、PostgreSQLをデータベースとして使用した
+社外でMacをアクセスポイントとしたWebアプリです
 
 ---
 
@@ -83,6 +84,6 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 5000
 
 ## 注意点
 
-このリポジトリは教育・検証用途であり、本番環境での使用は推奨されません。
+このリポジトリは教育・検証用途であり、一般配布を想定しておりません
 
 ---
