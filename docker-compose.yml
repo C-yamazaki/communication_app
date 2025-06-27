@@ -1,0 +1,61 @@
+services:
+  flutter:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./frontend/assets:/frontend/assets
+      - ./frontend/lib:/frontend/lib
+      - ./frontend/pubspec.yaml:/frontend/pubspec.yaml
+      # - ./test:/frontend/test  # testを使う場合にコメントアウトを外せばOK
+    environment:
+      - API_BASE_URL=http://backend:8001
+    depends_on:
+      backend:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/backend
+    environment:
+      - DATABASE_URL=postgresql://myuser:postgres@db:5432/communication
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: communication
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "myuser", "-d", "communication"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
