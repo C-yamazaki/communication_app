@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from test.test_models import User
-from test.test_schemas import UserCreate
+from schemas import UserCreate
 
 # ユーザー新規登録
-def create_user(db: Session, user: UserCreate):
+def test_create_user(db: Session, user: UserCreate):
     # 社員番号の重複チェック
     existing_user = db.query(User).filter(User.employee_code == user.employee_code).first()
     if existing_user:
