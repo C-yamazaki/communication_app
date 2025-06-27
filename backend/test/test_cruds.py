@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from test.test_models import User
+from models import User
 from schemas import UserCreate
 
 # ユーザー新規登録
