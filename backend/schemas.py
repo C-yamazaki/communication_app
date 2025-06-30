@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict
 
 # ユーザー登録用（POSTリクエスト）
 class UserCreate(BaseModel):
@@ -7,10 +7,10 @@ class UserCreate(BaseModel):
     admin: bool
 
 # ユーザー表示用（レスポンス）
-# class UserRead(BaseModel):
-#     id: int
-#     name: str
-#     email: EmailStr
+class UserRead(BaseModel):
+    id: int
+    nickname: str
+    employee_code: str
+    admin: bool
 
-#     class Config:
-#         from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
