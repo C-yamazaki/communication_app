@@ -21,6 +21,7 @@ def teardown_function(function):
     db.commit()
     db.close()
 
+# ユーザー登録のテスト
 def test_create_user_success():
     db: Session = SessionLocal()
 
@@ -38,7 +39,7 @@ def test_create_user_success():
     assert user.admin is False
     db.close()
 
-
+# ユーザー登録の重複エラーのテスト
 def test_create_user_duplicate():
     db: Session = SessionLocal()
 
@@ -57,7 +58,7 @@ def test_create_user_duplicate():
     db.close()
 
 
-
+# ユーザー一覧取得のテスト
 def test_get_users_returns_all_users():
     db: Session = SessionLocal()
     # Arrange: ユーザーを2人登録
