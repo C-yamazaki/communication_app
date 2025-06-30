@@ -1,3 +1,5 @@
+# APIルートのテスト
+
 import os
 os.environ["TESTING"] = "true"  # SQLiteのインメモリDBを使用
 
@@ -59,20 +61,24 @@ def test_create_user_duplicate():
     assert response.json()["detail"] == "この社員コードはすでに登録されています"
 
 
-
-
-
-
-    # email重複チェック（任意で）
-    # existing = db.query(test_models.User).filter(test_models.User.email == user.email).first()
-    # if existing:
-    #     raise HTTPException(status_code=400, detail="Email already registered")
-    # return test_cruds.create_user(db, user)
-
-
-
 # ユーザー一覧取得（GET）
-# # @router.get("/users", response_model=list[test_schemas.UserRead])
-# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return test_cruds.get_users(db, skip=skip, limit=limit)
+client = TestClient(app)
 
+def test_get_users_route_returns_users_list():
+    # Arrange: 前のデータを削除する（テスト用エンドポイントがある場合）
+    client.delete("/test/clear-users")  # もしくは直接DBクリアロジックをテスト用に用意
+    
+    # Arrange: ユーザーをAPI経由で2人登録
+    client.post("/users", json={"nickname": "ユーザーC", "employee_code": "EMP003", "admin": False})
+    client.post("/users", json={"nickname": "ユーザーD", "employee_code": "EMP004", "admin": True})
+
+    # Act: GETリクエストで一覧取得
+    response = client.get("/users")
+
+    # Assert: ステータスコード・中身の確認
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 2
+    assert data[0]["nickname"] == "ユーザーC"
+    assert data[1]["employee_code"] == "EMP004"
