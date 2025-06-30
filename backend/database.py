@@ -7,9 +7,10 @@ import os
 TESTING = os.environ.get("TESTING") == "true"
 
 if TESTING:
-    DATABASE_URL = "sqlite:///:memory:"
+    DATABASE_URL = "sqlite:///./test.db"    #"sqlite:///:memory:の一時的からファイルベース化に変更"
     CONNECT_ARGS = {"check_same_thread": False}
 else:
+    # 本番環境のデータベースURL
     DATABASE_URL = os.environ.get("DATABASE_URL") or "postgresql://myuser:postgres@localhost/communication"
     CONNECT_ARGS = {}
     
@@ -17,11 +18,6 @@ else:
 engine = create_engine(DATABASE_URL, echo=True, connect_args=CONNECT_ARGS)
 
 
-# 環境変数からDATABASE_URLを取得
-# DATABASE_URL = os.environ.get("DATABASE_URL") or "postgresql://myuser:postgres@localhost/communication"
-
-# DB接続用エンジン
-# engine = create_engine(DATABASE_URL, echo=True)
 
 # セッションファクトリ
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -36,3 +32,4 @@ def get_db():
         yield db
     finally:
         db.close()
+    

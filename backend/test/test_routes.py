@@ -59,18 +59,6 @@ def test_create_user_duplicate():
     assert response.json()["detail"] == "この社員コードはすでに登録されています"
 
 
-
-
-
-
-    # email重複チェック（任意で）
-    # existing = db.query(test_models.User).filter(test_models.User.email == user.email).first()
-    # if existing:
-    #     raise HTTPException(status_code=400, detail="Email already registered")
-    # return test_cruds.create_user(db, user)
-
-
-
 # ユーザー一覧取得（GET）
 # # @router.get("/users", response_model=list[test_schemas.UserRead])
 # def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
