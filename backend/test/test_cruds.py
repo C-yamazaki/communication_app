@@ -52,6 +52,6 @@ def test_create_user_duplicate():
         assert False, "重複エラーが起きるべきだった"
     except Exception as e:
         assert e.status_code == 400
-        assert "すでに登録されています" in str(e.detail)
+        assert "すでに登録されています" in e.detail
 
     db.close()

@@ -2,25 +2,21 @@ import os
 os.environ["TESTING"] = "true"  # SQLiteのインメモリDBを使用
 
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 from main import create_app
-from database import Base, engine, get_db
+from database import Base, get_db  # engine は使わない
 
 # テスト用のインメモリDBを使用
 TEST_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False}, poolclass=StaticPool )
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
-# テーブル作成
-Base.metadata.create_all(bind=engine)
+# テーブル作成（重要：test_engine を使う！）
+Base.metadata.create_all(bind=test_engine)
 
-# FastAPIの依存関係を上書き
-app = create_app()
-
-# テスト用DBセッションを使うよう差し替え
+# テスト用DBセッションに差し替え
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -28,11 +24,12 @@ def override_get_db():
     finally:
         db.close()
 
+# FastAPI アプリ作成 → 依存関係を上書き
+app = create_app()
 app.dependency_overrides[get_db] = override_get_db
 
-
-# テストクライアント作成（FastAPIアプリを実際に起動せずに叩く）
-client = TestClient(create_app())
+#　テストクライアント作成
+client = TestClient(app)
 
 # ユーザー登録（POST）
 def test_create_user():
@@ -52,7 +49,6 @@ def test_create_user():
     assert "id" in data
 
 def test_create_user_duplicate():
-    # 同じ employee_code を再登録して 400 を期待
     payload = {
         "nickname": "重複ユーザー",
         "employee_code": "EMP001",  # 上と同じ
@@ -60,7 +56,7 @@ def test_create_user_duplicate():
     }
     response = client.post("/users", json=payload)
     assert response.status_code == 400
-    assert response.json()["detail"] == "Employee code already exists"
+    assert response.json()["detail"] == "この社員コードはすでに登録されています"
 
 
 
